@@ -1,3 +1,56 @@
+# Write Up: Approach to Technical Assessment 
+In this application, each word is a separate component which has separate calculations to determin if a piece of associated data with the word and current state of the application means that the word should be highlighted. With a total of 90 paragraphs, each paragraph was fetched from a data file on the backend with it's own individual request, adding up to a total of 90 requests when the web page loaded. 
+
+The technical assessment asked me to improve the user experience of the application by reducing the initial load time of the page, only rendering and executing the highlight calculation on content visible to the user, and applying styling to the page and content to make it more engaging and welcoming. While completing the assignment, we were asked not to change the fact that each paragraph was delivered to the frontend with it's own request and to not change the word highlighting and editing behavior of the application. 
+
+## Initial Analysis of Application
+Before making changes in the code, I went into Google dev tools to analyze the current performance of the application. In addition to testing online performance, I ran performance tests across fast and slow 3G. 
+
+### Memory 
+* Code - 1, 129 kb
+* Strings - 3,670 kb
+* JS Arrays - 34,777 kb
+* Typed Arrays - 2,746 kb
+* System Objects - 608 kb
+* Total - 140,809 kb
+
+### Network
+
+__Slow 3G:__ 
+* 100 requests, 473 kb transferred, 5.0 mb requests, DOMContent Loaded in 4.21 s, Loaded in 4.50 s
+* Mapped fetches taking up 152b and 2.02s
+```
+  let dataItems = await Promise.all(
+    list.map(async id => {
+    return (await fetch("/api/dataItem/ + id)).json()}))
+    setData(dataItems)
+    }
+    fetchData()
+  }, [])
+```
+__Fast 3G:__ DOMContent Loaded in 3.38s, Loaded in 3.78s
+__Online:__ DOMContent Loaded in 172 ms, Loaded in 578 ms 
+
+### LightHouse
+Lighthouse gave the unoptimized application a performance score of 24. 
+
+__Metrics:__
+* First Contentful Paint .7s
+* Speed Index 4.9s
+* Largest Contentful Paint 4.1s
+* Time to Interactive 18.2 s
+* Total Blocking Time 16,450 ms
+* Cumulative Layout Shift .002
+
+__Issues:__
+* Excessive DOM Size: 33,543 total DOM elements with max DOM depth of 5 and max child elements of 385. 
+* 97 request served over HTTP/1 protocal rather than HTTP/2
+* Time spent parsing, compiling, and executing JS: script evaluation 16,644 ms, style/layout 967 ms, garbage collection 533 ms
+* 98 request have 2,433 kb transfer size
+
+--------------------
+# Technical Assessment Instructions
+
 # JusticeText Full Stack Technical Assessment
 
 Thank you so much for your interest in joining JusticeText. Please read the instructions below before you start the assessment.
