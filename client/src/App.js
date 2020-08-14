@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import TextItem from './TextItem'
+//import TextItem from './TextItem'
+import TextParagraph from './TextParagraph'
 import './App.css';
 
 // const DATA_SIZE_HALF = "half"
@@ -9,7 +10,8 @@ const INTERVAL_TIME = 2000
 /** Application entry point */
 function App() {
 
-  const [data, setData] = useState([])
+  //const [data, setData] = useState([])
+  const [list, setList] = useState([])
   const [value, setValue] = useState(0)
   const [searchInput, setSearchInput] = useState("")
 
@@ -26,11 +28,11 @@ function App() {
     const fetchData = async () => {
       let response = await fetch("/api/dataIdList?datasize=" + DATA_SIZE_FULL)
       let list = await response.json()
-
-      let dataItems = await Promise.all (list.map(async id => {
-        return (await fetch("/api/dataItem/" + id)).json()
-      }))
-      setData(dataItems)
+      setList(list);
+      //let dataItems = await Promise.all (list.map(async id => {
+      //  return (await fetch("/api/dataItem/" + id)).json()
+      //}))
+      //setData(dataItems)
     }
     
     fetchData()
@@ -46,7 +48,13 @@ function App() {
       <div>
         <input type="text" placeholder="Search text" value={searchInput} onChange={handleChange}/>
       </div>
-     {
+      {
+        list.map((i) => {
+          console.log(`mapping ${i}`);
+          return <TextParagraph i={i} searchInput={searchInput} value={value}/>
+        })
+      }
+     {/*{
        data.map((row, i) => {
         return (<p key={`p${i}`}>
           {row.map((textitem, j) => {
@@ -61,7 +69,7 @@ function App() {
           })}
         </p>)
        })
-     }
+     }*/}
     </div>
   );
 }
